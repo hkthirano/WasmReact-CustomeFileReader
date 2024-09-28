@@ -1,10 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import init, { add } from './pkg/sample_lib';
 
 function App() {
   const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    const loadWasm = async () => {
+      try {
+        await init();
+        const res = add(10, 5);
+        console.log("Result of add(10, 5):", res);
+      } catch (err) {
+        console.error("Failed to initialize Wasm module:", err);
+      }
+    };
+
+    loadWasm();
+  }, [])
 
   return (
     <>

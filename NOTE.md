@@ -1,3 +1,5 @@
+# React
+
 npm create vite@latest
 
 devcontainerで起動したアプリにアクセスするための設定
@@ -14,3 +16,9 @@ server: {
     host: '127.0.0.1'
 }
 ```
+
+# WASM
+
+cargo install wasm-pack
+
+cargo new --lib my-wasm-lib
