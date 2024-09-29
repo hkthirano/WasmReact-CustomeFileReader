@@ -24,3 +24,10 @@ cargo install wasm-pack
 cargo new --lib library-project
 
 cargo new binary-project
+
+VS CodeのLive ServerでWASMをすぐにデバッグできる
+
+有益そうなサイト
+
+https://zenn.dev/matcha_choco010/articles/2022-06-11-trunk-rust-wasm#wasm-bindgen
+

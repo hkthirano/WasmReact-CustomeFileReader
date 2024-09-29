@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="module">
+        import init, { Bmp } from "./pkg/browser_file_reader_wasm.js";
+
+        async function run() {
+            await init();
+        }
+
+        window.onButtonClick = async function () {
+            console.log("Button was clicked!");
+
+            // select bmp file
+            const [fileHandle] = await window.showOpenFilePicker({
+                multiple: false,
+                types: [
+                    {
+                        description: 'Bitmap files',
+                        accept: {
+                            'image/bmp': ['.bmp'],
+                        },
+                    },
+                ],
+            });
+
+            const file = await fileHandle.getFile();
+
+            const bmp = new Bmp(file);
+            await bmp.open();
+            const header = bmp.header;
+            console.log(header.bi_width, header.bi_height);
+        };
+
+        run();
+    </script>
+</head>
+
+<body>
+    <h1>Rust and WebAssembly</h1>
+    <button onclick="onButtonClick()">Click</button>
+</body>
+
+</html>
