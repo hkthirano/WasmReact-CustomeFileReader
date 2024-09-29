@@ -1,3 +1,4 @@
+use js_sys::Uint8Array;
 use std::mem;
 use wasm_bindgen::prelude::*;
 use web_sys::{self, File};
@@ -173,5 +174,35 @@ impl Bmp {
     #[wasm_bindgen(getter)]
     pub fn header(&self) -> Option<BmpHeader> {
         self.header.clone()
+    }
+
+    pub async fn get_pixel_data(&self) -> Result<Uint8Array, JsValue> {
+        if let Some(header) = &self.header {
+            let start = header.bf_off_bits as f64;
+            let pixel_data_slice = self.file.slice_with_f64(start)?;
+
+            let array_buffer_promise = pixel_data_slice.array_buffer();
+            let array_buffer = wasm_bindgen_futures::JsFuture::from(array_buffer_promise).await?;
+            let uint8_array = Uint8Array::new(&array_buffer);
+
+            let width = header.bi_width as usize;
+            let height = header.bi_height as usize;
+            let row_size = ((header.bi_bit_count as usize * width + 31) / 32) * 4;
+            let image_size = row_size * height;
+
+            let mut flipped_data = vec![0; image_size];
+            let data: Vec<u8> = uint8_array.to_vec();
+
+            for y in 0..height {
+                let src_index = y * row_size;
+                let dest_index = (height - 1 - y) * row_size;
+                flipped_data[dest_index..dest_index + row_size]
+                    .copy_from_slice(&data[src_index..src_index + row_size]);
+            }
+
+            Ok(Uint8Array::from(flipped_data.as_slice()))
+        } else {
+            Err("BMP header not found".into())
+        }
     }
 }
